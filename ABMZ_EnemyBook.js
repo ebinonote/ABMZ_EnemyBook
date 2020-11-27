@@ -1,6 +1,6 @@
 ﻿// =============================================================================
 // ABMZ_EnemyBook.js
-// Version: 1.35
+// Version: 1.36
 // -----------------------------------------------------------------------------
 // [Homepage]: ヱビのノート
 //             http://www.zf.em-net.ne.jp/~ebi-games/
@@ -10,7 +10,7 @@
 
 /*:
  * @target MZ
- * @plugindesc v1.35 Displays detailed statuses of enemies.
+ * @plugindesc v1.36 Displays detailed statuses of enemies.
  * Includes element rates, state rates etc.
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
@@ -701,6 +701,10 @@
  * Update Log
  * ============================================================================
  * 
+ * Version 1.36
+ *   Fixed the bug that it get error and stop the game when turn Touch UI off
+ *   in option and open the Enemy Book.
+ * 
  * Version 1.35
  *   Create for RPGMakerMZ.
  * 
@@ -857,7 +861,7 @@
 
 /*:ja
  * @target MZ
- * @plugindesc v1.35 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
+ * @plugindesc v1.36 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
  * 
@@ -1557,6 +1561,10 @@
  * ============================================================================
  * 更新履歴
  * ============================================================================
+ * 
+ * Version 1.36
+ *   タッチUIをOFFにしてモンスター図鑑を開いたとき、エラーが出て止まってしまう
+ *   不具合を修正しました。
  * 
  * Version 1.35
  *   RPGツクールMZに対応しました。
@@ -2512,8 +2520,9 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
 		this._enemyBookIndexWindow.deselect();
 		this._enemyBookOpen = false;
 		//
-		SceneManager._scene._cancelButton.y = SceneManager._scene.buttonY();
-		
+		if (SceneManager._scene._cancelButton) {
+			SceneManager._scene._cancelButton.y = SceneManager._scene.buttonY();
+		}
 		// v1.28
 		if (AB_EnemyBook.backWindow == 'actor_command') {
 			this._actorCommandWindow.activate();
@@ -2768,7 +2777,9 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
 
 	Window_EnemyBookIndex.prototype.refresh = function() {
 		//
-		SceneManager._scene._cancelButton.y = 0;
+		if (SceneManager._scene._cancelButton) {
+			SceneManager._scene._cancelButton.y = 0;
+		}
 		this._list = [];
 		if (this.enemy) {
 			this._list.push(this.enemy);

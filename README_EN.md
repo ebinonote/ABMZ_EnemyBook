@@ -235,6 +235,11 @@ Players can think a lot when they open the EnemyBook.
 
 ## Update Log
 
+### Version 1.36
+  Fixed the bug that it get error and stop the game when turn Touch UI off in option and open the Enemy Book.
+
+### Version 1.35
+  Create for RPGMakerMZ.
 
 ### Version 1.34
   Change to be able to change Enemy Photo Offset Y.
