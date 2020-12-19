@@ -1,6 +1,6 @@
 ﻿// =============================================================================
 // ABMZ_EnemyBook.js
-// Version: 1.36
+// Version: 1.37
 // -----------------------------------------------------------------------------
 // [Homepage]: ヱビのノート
 //             http://www.zf.em-net.ne.jp/~ebi-games/
@@ -10,7 +10,7 @@
 
 /*:
  * @target MZ
- * @plugindesc v1.36 Displays detailed statuses of enemies.
+ * @plugindesc v1.37 Displays detailed statuses of enemies.
  * Includes element rates, state rates etc.
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
@@ -701,9 +701,12 @@
  * Update Log
  * ============================================================================
  * 
+ * Version 1.37
+ *   Fixed the bug that stop when player use the check skill.
+ * 
  * Version 1.36
- *   Fixed the bug that it get error and stop the game when turn Touch UI off
- *   in option and open the Enemy Book.
+ *   Fixed the bug that it get error and stop the game when turn Touch UI on
+ *   in option and open the enemy book.
  * 
  * Version 1.35
  *   Create for RPGMakerMZ.
@@ -861,7 +864,7 @@
 
 /*:ja
  * @target MZ
- * @plugindesc v1.36 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
+ * @plugindesc v1.37 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
  * 
@@ -1561,6 +1564,10 @@
  * ============================================================================
  * 更新履歴
  * ============================================================================
+ * 
+ * Version 1.37
+ *   チェックスキルを使うと操作が利かなくなる不具合を修正しました。
+ *   ※BattleManagerのphaseに「check」を追加しています。
  * 
  * Version 1.36
  *   タッチUIをOFFにしてモンスター図鑑を開いたとき、エラーが出て止まってしまう
@@ -2540,7 +2547,19 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
 			this._actorCommandWindow.deactivate();
 			this._itemWindow.activate();
 		}
+		if (AB_EnemyBook.backWindow == 'check') {
+/*
+			this._actorCommandWindow.deactivate();
+			this._itemWindow.activate();*/
+			BattleManager._phase = "turn";
+			this._enemyBookIndexWindow.x = 0;
+			this._enemyBookIndexWindow.y = 0;
+			this._enemyBookIndexWindow.height = Graphics.boxHeight;
+			
+		}
 		//this.startPartyCommandSelection();
+		// v1.37
+		AB_EnemyBook.backWindow = null;
 	};
 
 //=============================================================================
@@ -3553,9 +3572,19 @@ Window_Selectable.prototype.processCancel = function() {
 			// v1.17
 			indexWindow.isAllEnemies = false;
 			statusWindow.isAllEnemies = false;
+			// v1.37
+			AB_EnemyBook.backWindow = "check";
+			BattleManager._phase = "check";
+
+
 
 			indexWindow.setupWhenCheck();
 			statusWindow.setupWhenCheck();
+			indexWindow.activate();
+			indexWindow.show();
+			//indexWindow.x = 200;
+			indexWindow.y = -2000;
+			//indexWindow.open();
 		} else {
 			var message = FailToCheckEnemySkillMessage.replace("%1", target.name());
 			if (message) {
@@ -3605,7 +3634,27 @@ Window_Selectable.prototype.processCancel = function() {
 		}
 		return r;
 	}
+//=============================================================================
+// BattleManager
+//=============================================================================
 
+/*
+var _BattleManager_updateEvent = BattleManager.updateEvent;
+BattleManager.updateEvent = function() {
+	if (AB_EnemyBook.backWindow == "check") {
+		return true;
+	}
+	return _BattleManager_updateEvent.call(this);
+};*/
+/*
+	var _BattleManager_updateTurn = BattleManager.updateTurn;
+	BattleManager.updateTurn = function(timeActive) {
+		if (AB_EnemyBook.backWindow == "check") {
+			return true;
+		}
+			_BattleManager_updateTurn.call(this, timeActive);
+	};
+*/
 
 // 
 //=============================================================================
