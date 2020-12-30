@@ -234,6 +234,10 @@ In the Time Progress Battle, battlers doesn't charge when the EnemyBook opens.
 Players can think a lot when they open the EnemyBook.
 
 ## Update Log
+### Version 1.38
+  Fixed the bug when plugin parameter "Display Hit Rate" turn on.
+  Fixed the bug that "Display Skills Number" is counted double.
+  Add new parameter "Evade Rate".
 
 ### Version 1.36
   Fixed the bug that it get error and stop the game when turn Touch UI off in option and open the Enemy Book.

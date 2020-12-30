@@ -1,6 +1,6 @@
 ﻿// =============================================================================
 // ABMZ_EnemyBook.js
-// Version: 1.37
+// Version: 1.38
 // -----------------------------------------------------------------------------
 // [Homepage]: ヱビのノート
 //             http://www.zf.em-net.ne.jp/~ebi-games/
@@ -10,7 +10,7 @@
 
 /*:
  * @target MZ
- * @plugindesc v1.37 Displays detailed statuses of enemies.
+ * @plugindesc v1.38 Displays detailed statuses of enemies.
  * Includes element rates, state rates etc.
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
@@ -154,6 +154,12 @@
  * @type string
  * @desc This is the name of Hit Rate.
  * @default Hit Rate
+ * 
+ * @param EvadeRateName
+ * @text Evade Rate Name
+ * @type string
+ * @desc This is the name of Evade Rate.
+ * @default Evade Rate
  * 
  * @param WeakElementName
  * @text Weak Element Name
@@ -347,6 +353,16 @@
  * @option hide
  * @value 0
  * @desc Do you wish to display Hit Rate in the Enemybook? 0: show, 1: hide
+ * @default 0
+ * 
+ * @param DispEvadeRate
+ * @text Display Evade Rate
+ * @type select
+ * @option show
+ * @value 1
+ * @option hide
+ * @value 0
+ * @desc Do you wish to display Evade Rate in the Enemybook? 0: show, 1: hide
  * @default 0
  * 
  * @param DispSkillNumber
@@ -701,6 +717,11 @@
  * Update Log
  * ============================================================================
  * 
+ * Version 1.38
+ *   Fixed the bug when plugin parameter "Display Hit Rate" turn on.
+ *   Fixed the bug that "Display Skills Number" is counted double.
+ *   Add new parameter "Evade Rate".
+ * 
  * Version 1.37
  *   Fixed the bug that stop when player use the check skill.
  * 
@@ -864,7 +885,7 @@
 
 /*:ja
  * @target MZ
- * @plugindesc v1.37 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
+ * @plugindesc v1.38 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
  * 
@@ -1011,6 +1032,12 @@
  * @type string
  * @desc 命中率を図鑑になんと表示しますか？
  * @default 命中率
+ * 
+ * @param EvadeRateName
+ * @text 回避率名前
+ * @type string
+ * @desc 回避率を図鑑になんと表示しますか？
+ * @default 回避率
  * 
  * @param WeakElementName
  * @text 弱点属性の名前
@@ -1207,6 +1234,16 @@
  * @option 非表示
  * @value 0
  * @desc 図鑑に命中率を表示するか決めます。0:非表示、1:表示
+ * @default 0
+ * 
+ * @param DispEvadeRate
+ * @text 回避率表示
+ * @type select
+ * @option 表示
+ * @value 1
+ * @option 非表示
+ * @value 0
+ * @desc 図鑑に回避率を表示するか決めます。0:非表示、1:表示
  * @default 0
  * 
  * @param DispSkillNumber
@@ -1564,6 +1601,12 @@
  * ============================================================================
  * 更新履歴
  * ============================================================================
+ * 
+ * Version 1.38
+ *   「命中率表示」をONにして図鑑を開いたとき、エラーが出て止まる不具合と、
+ *   「スキル表示数」が2倍計算されていた不具合を修正しました。
+ *   「回避率表示」を追加しました。
+ * 
  * 
  * Version 1.37
  *   チェックスキルを使うと操作が利かなくなる不具合を修正しました。
@@ -1923,10 +1966,11 @@
 	dispParameters[7] = (parameters['DispLUK'] == 1) ? true : false;
 	var dispTP = (parameters['DispTP'] == 1) ? true : false;
 	var dispHitRate = (parameters['DispHitRate'] == 1) ? true : false;
+	var DispEvadeRate = (parameters['DispEvadeRate'] == 1) ? true : false;
 
-	var DispSkillNumber = Number(parameters['DispSkillNumber'] || "命中率");
 
-	var DescribeLineNumber = Number(parameters['DescribeLineNumber']);
+
+	var DispSkillNumber = Number(parameters['DispSkillNumber']);
 
 	var DispDropItems = (parameters['DispDropItems'] == 1) ? true : false;
 	var dispRates = [];
@@ -1946,6 +1990,8 @@
 	var ElementIcons = (parameters['ElementIcons']).split(" ");
 	var a = [0];
 	ElementIcons = a.concat(ElementIcons);
+	var HitRateName = String(parameters['HitRateName'] || "命中率");
+	var EvadeRateName = String(parameters['EvadeRateName'] || "回避率");
 
 	if (!Imported) var Imported = {};
 //=============================================================================
@@ -2610,7 +2656,7 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
 			}
 		}
 		// v1.30
-		linePlus += DispSkillNumber;
+		//linePlus += DispSkillNumber;
 
 		linePlus = Math.ceil(linePlus) * 2;
 
@@ -2639,6 +2685,7 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
 		if (DispLv) linePlus++;
 		if (dispTP) linePlus++;
 		if (dispHitRate) linePlus++;
+		if (DispEvadeRate) linePlus++;
 		linePlus = Math.max(linePlus, DispDropItems ? 9 : 6);
 		height = lineHeight * linePlus + textPadding * 2;
 
@@ -3221,6 +3268,18 @@ Window_Selectable.prototype.processCancel = function() {
 			this.resetTextColor();
 			if (!isHideStatus) {
 				this.drawText((enemy.xparam(0)*100), x + w, y, w, 'right');
+			} else {
+				this.drawText(UnknownData, x + w, y, w, 'right');
+			}
+			y += lineHeight;
+			
+		}
+		if (DispEvadeRate) {
+			this.changeTextColor(this.systemColor());
+			this.drawText(EvadeRateName, x, y, w);
+			this.resetTextColor();
+			if (!isHideStatus) {
+				this.drawText((Math.floor(enemy.xparam(1)*100)), x + w, y, w, 'right');
 			} else {
 				this.drawText(UnknownData, x + w, y, w, 'right');
 			}
