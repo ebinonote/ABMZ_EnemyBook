@@ -1,6 +1,6 @@
 ﻿// =============================================================================
 // ABMZ_EnemyBook.js
-// Version: 1.38
+// Version: 1.39
 // -----------------------------------------------------------------------------
 // [Homepage]: ヱビのノート
 //             http://www.zf.em-net.ne.jp/~ebi-games/
@@ -10,7 +10,7 @@
 
 /*:
  * @target MZ
- * @plugindesc v1.38 Displays detailed statuses of enemies.
+ * @plugindesc v1.39 Displays detailed statuses of enemies.
  * Includes element rates, state rates etc.
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
@@ -717,6 +717,10 @@
  * Update Log
  * ============================================================================
  * 
+ * Version 1.39
+ *   Fixed the bug that display normal color even though set hue when it is 
+ *   Side View.
+ * 
  * Version 1.38
  *   Fixed the bug when plugin parameter "Display Hit Rate" turn on.
  *   Fixed the bug that "Display Skills Number" is counted double.
@@ -885,7 +889,7 @@
 
 /*:ja
  * @target MZ
- * @plugindesc v1.38 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
+ * @plugindesc v1.39 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
  * 
@@ -1601,6 +1605,9 @@
  * ============================================================================
  * 更新履歴
  * ============================================================================
+ * 
+ * Version 1.39
+ *   サイドビューで色相変更が反映されていなかった不具合を修正しました。
  * 
  * Version 1.38
  *   「命中率表示」をONにして図鑑を開いたとき、エラーが出て止まる不具合と、
@@ -3137,14 +3144,16 @@ Window_Selectable.prototype.processCancel = function() {
 				var cy = motionIndex % 6;
 				this._enemySprite.bitmap = bitmap;
 				this._enemySprite.setFrame(cx * cw, cy * ch, cw, ch);
+				this._enemySprite.setHue(hue);
 
 			} else {
-				bitmap = ImageManager.loadSvEnemy(name, hue);
+				bitmap = ImageManager.loadSvEnemy(name);
 				var cw = bitmap.width;
 				var ch = bitmap.height;
 				var cx = 0;
 				var cy = 0;
 				this._enemySprite.bitmap = bitmap;
+				this._enemySprite.setHue(hue);
 				// Ver1.11 たぶんこれが原因で1回目に表示されないので、
 				// YEP_X_AnimatedSVEnemiesを使っていないときは
 				// 処理をしない

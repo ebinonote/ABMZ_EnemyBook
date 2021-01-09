@@ -234,6 +234,9 @@ In the Time Progress Battle, battlers doesn't charge when the EnemyBook opens.
 Players can think a lot when they open the EnemyBook.
 
 ## Update Log
+
+###Version 1.39
+  Fixed the bug that display normal color even though set hue when it is Side View.
 ### Version 1.38
   Fixed the bug when plugin parameter "Display Hit Rate" turn on.
   Fixed the bug that "Display Skills Number" is counted double.
