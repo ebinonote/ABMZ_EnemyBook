@@ -1,6 +1,6 @@
 ﻿// =============================================================================
 // ABMZ_EnemyBook.js
-// Version: 1.39
+// Version: 1.40
 // -----------------------------------------------------------------------------
 // [Homepage]: ヱビのノート
 //             http://www.zf.em-net.ne.jp/~ebi-games/
@@ -10,7 +10,7 @@
 
 /*:
  * @target MZ
- * @plugindesc v1.39 Displays detailed statuses of enemies.
+ * @plugindesc v1.40 Displays detailed statuses of enemies.
  * Includes element rates, state rates etc.
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
@@ -717,6 +717,10 @@
  * Update Log
  * ============================================================================
  * 
+ * Version 1.40
+ *   Fixed the bug when player scroll a page with cursor right or left, scroll
+ *   hasn't worked.
+ * 
  * Version 1.39
  *   Fixed the bug that display normal color even though set hue when it is 
  *   Side View.
@@ -889,7 +893,7 @@
 
 /*:ja
  * @target MZ
- * @plugindesc v1.39 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
+ * @plugindesc v1.40 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
  * 
@@ -1605,6 +1609,10 @@
  * ============================================================================
  * 更新履歴
  * ============================================================================
+ * 
+ * Version 1.40
+ *   左右キーで1ページカーソル移動した時、スクロールが行われていなかった不具合
+ *   を修正しました。
  * 
  * Version 1.39
  *   サイドビューで色相変更が反映されていなかった不具合を修正しました。
@@ -2940,6 +2948,7 @@ Window_Selectable.prototype.processCancel = function() {
 		var maxPageRows = this.maxPageRows();
 		index = Math.min(index+maxPageRows, maxItems-1);
 		this.select(index);
+		this.scrollBy(0,maxPageRows * this.scrollBlockHeight());
 	};
 	Window_EnemyBookIndex.prototype.cursorLeft = function(wrap) {
     var index = this.index();
@@ -2947,6 +2956,7 @@ Window_Selectable.prototype.processCancel = function() {
 		index = Math.max(index-maxPageRows, 0);
 		this.select(index);
 		this.refreshCursor();
+		this.scrollBy(0,-maxPageRows * this.scrollBlockHeight());
 	};
 
 
