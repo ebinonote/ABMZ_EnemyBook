@@ -235,8 +235,15 @@ Players can think a lot when they open the EnemyBook.
 
 ## Update Log
 
-###Version 1.39
+### Version 1.42
+  Fixed the bug that if you used the plugin command "EnemyBook openEnemy" in Battle Scene, start the Battle from turn 0.
+
+### Version 1.41
+  Change to be able to use variables  in "openEnemy" command by using "v[id]" argument.
+
+### Version 1.39
   Fixed the bug that display normal color even though set hue when it is Side View.
+
 ### Version 1.38
   Fixed the bug when plugin parameter "Display Hit Rate" turn on.
   Fixed the bug that "Display Skills Number" is counted double.

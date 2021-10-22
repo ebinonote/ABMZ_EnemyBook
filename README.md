@@ -211,6 +211,12 @@ EnemyBook clearEnemyDrop
  
 ## 更新履歴
 
+### Version 1.42
+  戦闘中に「EnemyBook openEnemy」で図鑑を開いたときも戦闘用のウィンドウが開くようにしました。
+
+### Version 1.41
+  プラグインコマンド「EnemyBook openEnemy」で、v[id]の形で、その変数のIDの敵キャラのページを開けるようになりました。
+
 ### Version 1.40
   左右キーで1ページカーソル移動した時、スクロールが行われていなかった不具合を修正しました。
 

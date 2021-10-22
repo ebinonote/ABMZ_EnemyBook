@@ -1,6 +1,6 @@
 ﻿// =============================================================================
 // ABMZ_EnemyBook.js
-// Version: 1.40
+// Version: 1.42
 // -----------------------------------------------------------------------------
 // [Homepage]: ヱビのノート
 //             http://www.zf.em-net.ne.jp/~ebi-games/
@@ -10,7 +10,7 @@
 
 /*:
  * @target MZ
- * @plugindesc v1.40 Displays detailed statuses of enemies.
+ * @plugindesc v1.42 Displays detailed statuses of enemies.
  * Includes element rates, state rates etc.
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
@@ -717,6 +717,14 @@
  * Update Log
  * ============================================================================
  * 
+ * Version 1.42
+ *   Fixed the bug that if you used the plugin command "EnemyBook openEnemy"
+ *   in Battle Scene, start the Battle from turn 0.
+ * 
+ * Version 1.41
+ *   Change to be able to use variables  in "openEnemy" command by using
+ *   "v[id]" argument.
+ * 
  * Version 1.40
  *   Fixed the bug when player scroll a page with cursor right or left, scroll
  *   hasn't worked.
@@ -893,7 +901,7 @@
 
 /*:ja
  * @target MZ
- * @plugindesc v1.40 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
+ * @plugindesc v1.42 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
  * 
@@ -1610,6 +1618,14 @@
  * 更新履歴
  * ============================================================================
  * 
+ * Version 1.42
+ *   戦闘中に「EnemyBook openEnemy」で図鑑を開いたときも戦闘用のウィンドウが開
+ *   くようにしました。
+ * 
+ * Version 1.41
+ *   プラグインコマンド「EnemyBook openEnemy」で、
+ *   v[id]の形で、その変数のIDの敵キャラのページを開けるようになりました。
+ * 
  * Version 1.40
  *   左右キーで1ページカーソル移動した時、スクロールが行われていなかった不具合
  *   を修正しました。
@@ -2148,8 +2164,14 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
     });
 
     PluginManager.registerCommand(pluginName, "openEnemy", args => {
-				$gameTemp.ABEnemyBookId = Number(args[1]);
-				SceneManager.push(Scene_EnemyBook);
+				var v = $gameVariables._data;
+				args.enemyId = Number(eval(args.enemyId));
+				$gameTemp.ABEnemyBookId = Number(args.enemyId);
+				if ($gameParty.inBattle()) {
+					SceneManager._scene.allBattleEnemyBook();
+				} else {
+					SceneManager.push(Scene_EnemyBook);
+				}
     });
 
     PluginManager.registerCommand(pluginName, "showAllInBattle", args => {
@@ -2216,8 +2238,13 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
 				break;
 			// v1.16
 			case 'openEnemy':
-				$gameTemp.ABEnemyBookId = Number(args[1]);
-				SceneManager.push(Scene_EnemyBook);
+				var v = $gameVariables._data;
+				$gameTemp.ABEnemyBookId = Number(eval(args[1]));
+				if ($gameParty.inBattle()) {
+					SceneManager._scene.allBattleEnemyBook();
+				} else {
+					SceneManager.push(Scene_EnemyBook);
+				}
 				break;
 			//v1.17
 			case 'showAllInBattle':
