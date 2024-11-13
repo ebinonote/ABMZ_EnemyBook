@@ -1,6 +1,6 @@
 ﻿// =============================================================================
 // ABMZ_EnemyBook.js
-// Version: 1.42
+// Version: 1.43
 // -----------------------------------------------------------------------------
 // [Homepage]: ヱビのノート
 //             http://www.zf.em-net.ne.jp/~ebi-games/
@@ -10,7 +10,7 @@
 
 /*:
  * @target MZ
- * @plugindesc v1.42 Displays detailed statuses of enemies.
+ * @plugindesc v1.43 Displays detailed statuses of enemies.
  * Includes element rates, state rates etc.
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
@@ -717,13 +717,15 @@
  * Update Log
  * ============================================================================
  * 
+ * Version 1.43
+ *   Change to be able to use variable's value in "add", "remove", 
+ *   "getDefeatNumber" and "isResistard" with "v[id]" plugin command.
+ * 
  * Version 1.42
- *   Fixed the bug that if you used the plugin command "EnemyBook openEnemy"
- *   in Battle Scene, start the Battle from turn 0.
+ *   Fixed the bug when using "openEnemy" in Battle.
  * 
  * Version 1.41
- *   Change to be able to use variables  in "openEnemy" command by using
- *   "v[id]" argument.
+ *   Change to be able to use variable's value in "openEnemy" plugin command.
  * 
  * Version 1.40
  *   Fixed the bug when player scroll a page with cursor right or left, scroll
@@ -789,7 +791,7 @@
  * @arg enemyId
  * @type enemy
  * @text enemy ID
- * @desc Enemy's ID that you wish to be registerd to the EnemyBook.
+ * @desc Enemy's ID that you wish to be registerd to the EnemyBook. You can use variable's value by "v[id]".
  * 
  * @command remove
  * @text Remove From the EnemyBook
@@ -798,7 +800,7 @@
  * @arg enemyId
  * @type enemy
  * @text enemy ID
- * @desc Enemy's ID that you wish to be removed from the EnemyBook.
+ * @desc Enemy's ID that you wish to be removed from the EnemyBook. You can use variable's value by "v[id]".
  * 
  * @command complete
  * @text Complete the EnemyBook
@@ -850,7 +852,7 @@
  * @arg enemyId
  * @type enemy
  * @text Enemy ID
- * @desc This is the enemy ID you wish to confirm that is registerd or not
+ * @desc This is the enemy ID you wish to confirm that is registerd or not. You can use variable's value by "v[id]".
  * 
  * @arg switchId
  * @type switch
@@ -865,7 +867,7 @@
  * @arg enemyId
  * @type enemy
  * @text Enemy ID
- * @desc This is the enemy you wish to confirm the defeat number.
+ * @desc This is the enemy you wish to confirm the defeat number. You can use variable's value by "v[id]".
  * 
  * @arg variableId
  * @type variable
@@ -880,7 +882,7 @@
  * @arg enemyId
  * @type enemy
  * @text Enemy ID
- * @desc This is the enemy ID you want open.
+ * @desc This is the enemy ID you want open. You can use variable's value by "v[id]".
  * 
  * @command showAllInBattle
  * @text Show "Enemybook" Command
@@ -901,7 +903,7 @@
 
 /*:ja
  * @target MZ
- * @plugindesc v1.42 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
+ * @plugindesc v1.43 戦闘中も確認できるモンスター図鑑です。属性、ステートの耐性の確認もできます。
  * @author ヱビ
  * @url http://www.zf.em-net.ne.jp/~ebi-games/
  * 
@@ -1618,6 +1620,10 @@
  * 更新履歴
  * ============================================================================
  * 
+ * Version 1.43
+ *   「add」「remove」「getDefeatNumber」「isRegistered」でv[id]の形でその変数
+ *    のIDの敵キャラの倒した数を入れられるようにしました。
+ * 
  * Version 1.42
  *   戦闘中に「EnemyBook openEnemy」で図鑑を開いたときも戦闘用のウィンドウが開
  *   くようにしました。
@@ -1832,7 +1838,7 @@
  * @arg enemyId
  * @type enemy
  * @text 敵キャラのID
- * @desc 登録する敵キャラのIDです。
+ * @desc 登録する敵キャラのIDです。v[id]の形で変数を使えます。
  * 
  * @command remove
  * @text モンスター図鑑から削除する
@@ -1841,7 +1847,7 @@
  * @arg enemyId
  * @type enemy
  * @text 敵キャラのID
- * @desc 削除する敵キャラのIDです。
+ * @desc 削除する敵キャラのIDです。v[id]の形で変数を使えます。
  * 
  * @command complete
  * @text モンスター図鑑を完成させる
@@ -1893,7 +1899,7 @@
  * @arg enemyId
  * @type enemy
  * @text 敵キャラのID
- * @desc 登録されているかどうかを確認する敵キャラのIDです。
+ * @desc 登録されているかどうかを確認する敵キャラのIDです。v[id]の形で変数を使えます。
  * 
  * @arg switchId
  * @type switch
@@ -1908,7 +1914,7 @@
  * @arg enemyId
  * @type enemy
  * @text 敵キャラのID
- * @desc 何体倒したかを確認する敵キャラのIDです。
+ * @desc 何体倒したかを確認する敵キャラのIDです。v[id]の形で変数を使えます。
  * 
  * @arg variableId
  * @type variable
@@ -1923,7 +1929,7 @@
  * @arg enemyId
  * @type enemy
  * @text 敵キャラのID
- * @desc ページを開く敵キャラのIDです。
+ * @desc ページを開く敵キャラのIDです。v[id]の形で変数を使えます。
  * 
  * @command showAllInBattle
  * @text 「図鑑」コマンドを戦闘中に表示
@@ -2118,11 +2124,13 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
     });
 
     PluginManager.registerCommand(pluginName, "add", args => {
-				$gameSystem.addToEnemyBook(Number(args.enemyId));
+				var v = $gameVariables._data;
+				$gameSystem.addToEnemyBook(Number(eval(args.enemyId)));
     });
 
     PluginManager.registerCommand(pluginName, "remove", args => {
-				$gameSystem.removeFromEnemyBook(Number(args.enemyId));
+				var v = $gameVariables._data;
+				$gameSystem.removeFromEnemyBook(Number(eval(args.enemyId)));
     });
 
     PluginManager.registerCommand(pluginName, "complete", args => {
@@ -2156,11 +2164,13 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
     });
 
     PluginManager.registerCommand(pluginName, "isRegistered", args => {
-				$gameSystem.isRegistered(Number(args.enemyId), Number(args.switchId));
+				var v = $gameVariables._data;
+				$gameSystem.isRegistered(Number(eval(args.enemyId)), Number(args.switchId));
     });
 
     PluginManager.registerCommand(pluginName, "getDefeatNumber", args => {
-				$gameSystem.getDefeatNumber(Number(args.enemyId), Number(args.variableId));
+				var v = $gameVariables._data;
+				$gameSystem.getDefeatNumber(Number(eval(args.enemyId)), Number(args.variableId));
     });
 
     PluginManager.registerCommand(pluginName, "openEnemy", args => {
@@ -2193,6 +2203,7 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
 	var Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
 	Game_Interpreter.prototype.pluginCommand = function(command, args) {
 		Game_Interpreter_pluginCommand.call(this, command, args);
+		var v = $gameVariables._data;
 		if (command === 'EnemyBook') {
 			switch(args[0]) {
 			case 'open':
@@ -2204,10 +2215,10 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
 				}
 				break;
 			case 'add':
-				$gameSystem.addToEnemyBook(Number(args[1]));
+				$gameSystem.addToEnemyBook(Number(eval(args[1])));
 				break;
 			case 'remove':
-				$gameSystem.removeFromEnemyBook(Number(args[1]));
+				$gameSystem.removeFromEnemyBook(Number(eval(args[1])));
 				break;
 			case 'complete':
 				$gameSystem.completeEnemyBook();
@@ -2231,10 +2242,12 @@ Window_Base.prototype.drawCurrentAndMax = function(current, max, x, y,
 				$gameSystem.getAchievement(args[1], Number(args[2]));
 				break;
 			case 'isRegistered':
-				$gameSystem.isRegistered(Number(args[1]), Number(args[2]));
+				var v = $gameVariables._data;
+				$gameSystem.isRegistered(Number(eval(args[1])), Number(args[2]));
 				break;
 			case 'getDefeatNumber':
-				$gameSystem.getDefeatNumber(Number(args[1]), Number(args[2]));
+				var v = $gameVariables._data;
+				$gameSystem.getDefeatNumber(Number(eval(args[1])), Number(args[2]));
 				break;
 			// v1.16
 			case 'openEnemy':
